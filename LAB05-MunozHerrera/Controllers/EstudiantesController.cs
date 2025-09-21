@@ -10,7 +10,6 @@ public class EstudiantesController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    // Inyectamos IUnitOfWork, que nos da acceso a todos los repositorios
     public EstudiantesController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
@@ -20,7 +19,9 @@ public class EstudiantesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEstudiantes()
     {
-        var estudiantes = await _unitOfWork.EstudianteRepository.GetAllAsync();
+        // ANTES: _unitOfWork.EstudianteRepository.GetAllAsync()
+        // AHORA:
+        var estudiantes = await _unitOfWork.Repository<Estudiante>().GetAllAsync();
         return Ok(estudiantes);
     }
 
@@ -28,12 +29,15 @@ public class EstudiantesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateEstudiante(Estudiante estudiante)
     {
-        // 1. Agregamos la entidad usando el repositorio
-        await _unitOfWork.EstudianteRepository.AddAsync(estudiante);
+        // ANTES: _unitOfWork.EstudianteRepository.AddAsync(estudiante)
+        // AHORA:
+        await _unitOfWork.Repository<Estudiante>().AddAsync(estudiante);
 
-        // 2. Guardamos TODOS los cambios pendientes en la base de datos
+        // El guardado se mantiene igual
         await _unitOfWork.CompleteAsync();
 
         return CreatedAtAction("GetEstudiante", new { id = estudiante.IdEstudiante }, estudiante);
     }
+    
+    // Y así para los demás métodos...
 }
