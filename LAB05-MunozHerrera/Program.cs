@@ -1,5 +1,8 @@
+using LAB05_MunozHerrera.Application;
+using LAB05_MunozHerrera.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using LAB05_MunozHerrera.Data; 
+using LAB05_MunozHerrera.Data;
+using LAB05_MunozHerrera.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
+builder.Services.AddControllers(); 
 
 /////implementacion///
 
